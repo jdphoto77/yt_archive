@@ -1,0 +1,16 @@
+####################
+# Config paramters for Youtube Archive Code:
+# key --> Youtube API Key
+# user --> mariadb username
+# password --> mariadb password
+# rotation_days --> Number of days channel checks are spread across
+# webhook --> Webhook for Slack Integration
+# scrach_dir --> path to where youtube-dl does intermediate work
+####################
+
+readonly key=""
+readonly user=""
+readonly password=""
+readonly rotation_days=""
+readonly webhook=""
+readonly scratch_dir=""
