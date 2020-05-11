@@ -91,7 +91,7 @@ EOF
 	fi
 	vid_left=$(mysql -u ${user} -p${password} -D youtube -e "select count(video_id) from working;" | tail -n 1)
 	echo "Sleeping between 2-45 seconds"
-	sleep $[ ( $RANDOM % 45 )  + 1 ]s
+	sleep $[ ( $RANDOM % 45 )  + 1 ]
 done
 
 ## Set channels checked
