@@ -8,7 +8,7 @@
 code_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source ${code_dir}/yt_config
 id=$1
-channel_name=$2
+chan_id=$2
 link="https://www.youtube.com/watch?v="${id}
 
 echo Link: $link
@@ -32,12 +32,9 @@ fi
 file_name=$(ls | grep ${grepid})
 
 ## Get variables for Database Injection
-path=$(mysql -u $user -p${password} -D youtube -e "select base_dir from channel where channel_name = '"${channel_name}"';" | grep -v base_dir)
-if [ -z $3 ]; then
-	chan_id=$(mysql -u $user -p${password} -D youtube -e "select channel_id from channel where channel_name = '"${channel_name}"';" | grep -v channel_id)
-else
-	chan_id=$3
-fi
+path=$(mysql -u $user -p${password} -D youtube -e "select base_dir from channel where channel_id = '"${chan_id}"';" | grep -v base_dir)
+channel_name=$(mysql -u $user -p${password} -D youtube -e "select channel_name from channel where channel_id = '"${chan_id}"';" | grep -v channel_name)
+
 resolution=$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "${file_name}")
 duration=$(ffprobe -i "${file_name}" -show_entries format=duration -v quiet -of csv="p=0")
 full_path="${path}/${file_name}"

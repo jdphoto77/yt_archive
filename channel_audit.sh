@@ -6,14 +6,14 @@
 
 code_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source ${code_dir}/yt_config
-channel_name=$1
+channel_id=$1
 
 ## Get text file list of video id's in database
-mysql -u ${user} -p${password} -D youtube -e "select video_id from video where channel_name = '"${channel_name}"';" > tmp_list
+mysql -u ${user} -p${password} -D youtube -e "select video_id from video where channel_id = '"${channel_id}"';" > /tmp/tmp_list
 tail -n +2 /tmp/tmp_list > /tmp/working_list_in_db
 rm -rf /tmp/tmp_list
 
-channel_id=$(mysql -u ${user} -p${password} -D youtube -e "select channel_id from channel where channel_name = '"${channel_name}"';" | grep -v channel_id)
+channel_name=$(mysql -u ${user} -p${password} -D youtube -e "select channel_name from channel where channel_id = '"${channel_id}"';" | grep -v channel_id)
 
 ## Get text file list of video id's from youtube
 curl -sS "https://www.googleapis.com/youtube/v3/channels?key=${key}&id=${channel_id}&part=contentDetails&maxResults=50" -o /tmp/upload_workfile

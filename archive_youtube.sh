@@ -62,7 +62,7 @@ while [ ${vid_left} -gt 0 ]; do
 		## Set channels checked
 		for c in ${channels[@]};
 		do
-        		mysql -u $user -p${password} youtube -e "UPDATE channel SET last_checked = '"${day}"' WHERE channel_name ='"${c}"'"
+        		mysql -u $user -p${password} youtube -e "UPDATE channel SET last_checked = '"${day}"' WHERE channel_id ='"${c}"'"
 		done
 
 		#Set Download Database
@@ -97,7 +97,7 @@ done
 ## Set channels checked
 for c in ${channels[@]};
 do
-	mysql -u ${user} -p${password} youtube -e "UPDATE channel SET last_checked = '"${day}"' WHERE channel_name ='"${c}"'"
+	mysql -u ${user} -p${password} youtube -e "UPDATE channel SET last_checked = '"${day}"' WHERE channel_id ='"${c}"'"
 done
 
 #Set Download Database
