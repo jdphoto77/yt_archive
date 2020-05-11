@@ -27,7 +27,7 @@ if [ ${vid_left} -eq 0 ]; then
 	fi
 
 	## Get Today's Channel IDs
-	channels=($(mysql -u ${user} -p${password} -D youtube -e "select channel_name from channel where rotation_day = '"${today_run_number}"' AND active = '1';" | grep -v channel_name | xargs))
+	channels=($(mysql -u ${user} -p${password} -D youtube -e "select channel_id from channel where rotation_day = '"${today_run_number}"' AND active = '1';" | grep -v channel_id | xargs))
 
 
 	## Get New ID's from channel

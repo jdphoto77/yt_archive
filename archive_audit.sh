@@ -25,11 +25,11 @@ do
         	db_count=$(mysql -u ${user} -p${password} -D youtube -e "select count(video_id) from video where channel_name = '"${c}"' and is_child IS NULL and archive_exclusive is NULL;" | grep -v count)
 
 		channel_id=$(mysql -u ${user} -p${password} -D youtube -e "select channel_id from channel where channel_name = '"${c}"';" | grep -v channel_id)
-		wget -q "https://www.googleapis.com/youtube/v3/channels?key=${key}&id=${channel_id}&part=contentDetails&maxResults=50" -O upload_workfile
+		curl -sS "https://www.googleapis.com/youtube/v3/channels?key=${key}&id=${channel_id}&part=contentDetails&maxResults=50" -o upload_workfile
 		upload_id=$(grep uploads upload_workfile | cut -d':' -f 2 | cut -d'"' -f 2)
 		rm -rf upload_workfile
 
-		wget -q "https://www.googleapis.com/youtube/v3/playlistItems?key=${key}&part=contentDetails&playlistId=${upload_id}&maxResults=50" -O playlist_output
+		curl -sS "https://www.googleapis.com/youtube/v3/playlistItems?key=${key}&part=contentDetails&playlistId=${upload_id}&maxResults=50" -o playlist_output
 		yt_count=$(cat playlist_output | grep totalResults | cut -d':' -f 2 | cut -d',' -f 1 | sed "s/ //g")
 		rm -rf playlist_output
 

@@ -16,12 +16,12 @@ rm -rf tmp_list
 channel_id=$(mysql -u ${user} -p${password} -D youtube -e "select channel_id from channel where channel_name = '"${channel_name}"';" | grep -v channel_id)
 
 ## Get text file list of video id's from youtube
-wget "https://www.googleapis.com/youtube/v3/channels?key=${key}&id=${channel_id}&part=contentDetails&maxResults=50" -O upload_workfile
+curl -sS "https://www.googleapis.com/youtube/v3/channels?key=${key}&id=${channel_id}&part=contentDetails&maxResults=50" -o /tmp/upload_workfile
 upload_id=$(grep uploads upload_workfile | cut -d':' -f 2 | cut -d'"' -f 2)
 rm -rf upload_workfile
 done=0
 
-wget "https://www.googleapis.com/youtube/v3/playlistItems?key=${key}&part=contentDetails&playlistId=${upload_id}&maxResults=50" -O playlist_output
+curl -sS "https://www.googleapis.com/youtube/v3/playlistItems?key=${key}&part=contentDetails&playlistId=${upload_id}&maxResults=50" -o /tmp/playlist_output
 while [ ${done} -lt 1 ]; do
 	next_page=$(cat playlist_output | head -10 | grep nextPageToken | cut -d'"' -f 4)
 	if [ -z ${next_page} ]; then
@@ -29,7 +29,7 @@ while [ ${done} -lt 1 ]; do
 		done=1
 	else
 		cat playlist_output | grep videoId | cut -d'"' -f 4 >> working_list_from_yt
-		wget "https://www.googleapis.com/youtube/v3/playlistItems?key=${key}&pageToken=${next_page}&part=contentDetails&playlistId=${upload_id}&maxResults=50" -O playlist_output
+		curl -sS "https://www.googleapis.com/youtube/v3/playlistItems?key=${key}&pageToken=${next_page}&part=contentDetails&playlistId=${upload_id}&maxResults=50" -o /tmp/playlist_output
 		done=0
 	fi
 done
