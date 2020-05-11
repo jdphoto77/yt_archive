@@ -8,8 +8,8 @@ day=$(date +%Y-%m-%d)
 code_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source ${code_dir}/yt_config
 
-status=$(/usr/bin/systemctl status mariadb | grep "Active:" | awk '{print $2}')
-if [ "${status}" != "active" ]; then
+mysql -u ${user} -p${password} -D youtube -e "select 1;" >/dev/null 2>&1
+if [ $? -ne 0 ]; then
 	echo "Aborted Run due to mariadb offline"
 	exit 1
 fi
