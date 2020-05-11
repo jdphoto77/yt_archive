@@ -36,10 +36,10 @@ if [ ${vid_left} -eq 0 ]; then
 		${code_dir}/channel_audit.sh ${c}
 	done
 
-	today_id_count=$(cat get_today_from_yt | wc -l)
+	today_id_count=$(cat /tmp/get_today_from_yt | wc -l)
 
-	vids=($(cat get_today_from_yt | awk '{print $1}' | xargs))
-	chans=($(cat get_today_from_yt | awk '{print $2}' | xargs))
+	vids=($(cat /tmp/get_today_from_yt | awk '{print $1}' | xargs))
+	chans=($(cat /tmp/get_today_from_yt | awk '{print $2}' | xargs))
 	count=$(echo "${#vids[@]}")
 
 	v=0
@@ -49,7 +49,7 @@ if [ ${vid_left} -eq 0 ]; then
 EOF
 		v=$((v+1))
 	done
-	rm -rf get_today_from_yt
+	rm -rf /tmp/get_today_from_yt
 	vid_left=${count}
 fi
 
