@@ -89,6 +89,6 @@ EOF
 fi
 
 ## Move File to Archive
-mv *.mp4 ${path}/
+mv *.mp4 "${path}/"
 cd /
 rm -rf ${scratch_dir}
