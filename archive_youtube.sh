@@ -78,8 +78,7 @@ EOF
 	v=$(echo ${next} | awk '{print $1}')
 	c=$(echo ${next} | awk '{print $2}')
 	${code_dir}/youtube_fetch.sh $v $c
-	return=$?
-	if [ ${return} -ne 0 ]; then
+	if [ $? -ne 0 ]; then
 		mysql --user=$user --password=$password --default-character-set=utf8mb4 youtube << EOF
 			INSERT INTO trouble_vids (video_id, channel_id) VALUES ("${v}", "${c}");
 EOF

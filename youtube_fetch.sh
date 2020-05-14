@@ -20,8 +20,7 @@ rm -rf *
 
 ## Download the Video
 /usr/local/bin/youtube-dl --force-ipv4 --limit-rate 2M -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best' $link
-return_c=$?
-if [ ${return_c} -ne 0 ]; then
+if [ $? -ne 0 ]; then
 	exit 1
 fi
 if [[ $id == -* ]]; then
@@ -48,8 +47,7 @@ rm -rf /tmp/vid_info
 mysql --user=$user --password=$password --default-character-set=utf8mb4 youtube << EOF
 INSERT INTO video (video_id, video_title, channel_name, channel_id, resolution, duration_seconds, publish_date, file_path) VALUES ("$id", "$vid_title", "$channel_name", "$chan_id", "$resolution", "$duration", "$publish_date", "$full_path");
 EOF
-return_c=$?
-if [ ${return_c} -ne 0 ]; then
+if [ $? -ne 0 ]; then
 	echo "DB Entry Error: $id, $vid_title, $channel_name, $chan_id, $resolution, $duration, $publish_date, $full_path"
 fi
 
@@ -78,8 +76,7 @@ if [ ${dl_count} -gt 1 ]; then
 		mysql --user=$user --password=$password --default-character-set=utf8mb4 youtube << EOF
 INSERT INTO video (video_id, video_title, channel_name, channel_id, resolution, duration_seconds, publish_date, is_child, parent_id, file_path) VALUES ("$i", "$vid_title", "$channel_name", "$chan_id", "$resolution", "$duration", "$publish_date", "$child", "$id",  "$full_path");
 EOF
-	return_c=$?
-	if [ ${return_c} -ne 0 ]; then
+	if [ $? -ne 0 ]; then
 	        echo "DB Entry Error: $id, $vid_title, $channel_name, $chan_id, $resolution, $duration, $publish_date, $full_path"
 	fi
 	done
