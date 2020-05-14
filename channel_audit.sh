@@ -43,9 +43,10 @@ cat /tmp/working_list_in_db | sort > /tmp/db_list_sorted
 rm -rf /tmp/working_list_in_db
 
 comm -13 /tmp/db_list_sorted /tmp/yt_list_sorted > /tmp/get_staged
-sed -e "s/$/\ ${channel_name}/" -i /tmp/get_staged
+sed -e "s/$/\ ${channel_id}/" -i.bak /tmp/get_staged
 cat /tmp/get_staged >> /tmp/get_today_from_yt
 rm -rf /tmp/get_staged
+rm -rf /tmp/get_staged.bak
 
 
 rm -rf /tmp/db_list_sorted /tmp/yt_list_sorted
