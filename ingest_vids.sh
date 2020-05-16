@@ -28,7 +28,7 @@ do
 	resolution=$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "${path}/${file}")
 	duration_seconds=$(ffprobe -i "${path}/${file}" -show_entries format=duration -v quiet -of csv="p=0")
 	full_path="${path}/${filename}"
-	wget "https://www.googleapis.com/youtube/v3/videos?key=${key}&part=snippet&id=${i}" -O /tmp/vid_info
+	curl -sS "https://www.googleapis.com/youtube/v3/videos?key=${key}&part=snippet&id=${i}" -o /tmp/vid_info
 	publish_date=$(cat /tmp/vid_info | grep '"publishedAt":' | cut -d':' -f 2- | cut -d'"' -f 2 | cut -d'T' -f 1)
 	rm -rf /tmp/vid_info
 	echo Filename: $filename

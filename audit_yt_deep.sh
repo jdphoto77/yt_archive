@@ -12,12 +12,12 @@ db_id_count=$(wc -l /tmp/${channel_name}.db.ids | awk '{print $1}')
 channel_id=$(mysql -u ${user} -p${password} -D youtube -e "select channel_id from channel where channel_name = '"${channel_name}"';" | grep -v channel_id)
 
 ## Get text file list of video id's from youtube
-wget "https://www.googleapis.com/youtube/v3/channels?key=${key}&id=${channel_id}&part=contentDetails&maxResults=50" -O upload_workfile
+curl -sS "https://www.googleapis.com/youtube/v3/channels?key=${key}&id=${channel_id}&part=contentDetails&maxResults=50" -o upload_workfile
 upload_id=$(grep uploads upload_workfile | cut -d':' -f 2 | cut -d'"' -f 2)
 rm -rf upload_workfile
 done=0
 
-wget "https://www.googleapis.com/youtube/v3/playlistItems?key=${key}&part=contentDetails&playlistId=${upload_id}&maxResults=50" -O playlist_output
+curl -sS "https://www.googleapis.com/youtube/v3/playlistItems?key=${key}&part=contentDetails&playlistId=${upload_id}&maxResults=50" -o playlist_output
 while [ ${done} -lt 1 ]; do
 	next_page=$(cat playlist_output | head -10 | grep nextPageToken | cut -d'"' -f 4)
 	if [ -z ${next_page} ]; then
@@ -25,7 +25,7 @@ while [ ${done} -lt 1 ]; do
 		done=1
 	else
 		cat playlist_output >> /tmp/${channel_name}.playlist.data
-		wget "https://www.googleapis.com/youtube/v3/playlistItems?key=${key}&pageToken=${next_page}&part=contentDetails&playlistId=${upload_id}&maxResults=50" -O playlist_output
+		curl -sS "https://www.googleapis.com/youtube/v3/playlistItems?key=${key}&pageToken=${next_page}&part=contentDetails&playlistId=${upload_id}&maxResults=50" -o playlist_output
 		done=0
 	fi
 done
@@ -41,7 +41,7 @@ potential_unlisted=($(comm -13 /tmp/${channel_name}.yt.ids /tmp/${channel_name}.
 
 for p in ${potential_unlisted[@]};
 do
-	wget "https://www.googleapis.com/youtube/v3/videos?key=${key}&part=status&id=${p}" -O /tmp/vid_status_check
+	curl -sS "https://www.googleapis.com/youtube/v3/videos?key=${key}&part=status&id=${p}" -o /tmp/vid_status_check
 	state=$(cat /tmp/vid_status_check | grep privacyStatus | cut -d':' -f 2 | cut -d'"' -f 2)
 	if [ -z ${state} ]; then
                 echo ID: ${p} is Gone

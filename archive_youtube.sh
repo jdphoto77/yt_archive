@@ -8,8 +8,8 @@ day=$(date +%Y-%m-%d)
 code_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source ${code_dir}/yt_config
 
-status=$(/usr/bin/systemctl status mariadb | grep "Active:" | awk '{print $2}')
-if [ "${status}" != "active" ]; then
+mysql -u ${user} -p${password} -D youtube -e "select 1;" >/dev/null 2>&1
+if [ $? -ne 0 ]; then
 	echo "Aborted Run due to mariadb offline"
 	exit 1
 fi
@@ -27,7 +27,7 @@ if [ ${vid_left} -eq 0 ]; then
 	fi
 
 	## Get Today's Channel IDs
-	channels=($(mysql -u ${user} -p${password} -D youtube -e "select channel_name from channel where rotation_day = '"${today_run_number}"' AND active = '1';" | grep -v channel_name | xargs))
+	channels=($(mysql -u ${user} -p${password} -D youtube -e "select channel_id from channel where rotation_day = '"${today_run_number}"' AND active = '1';" | grep -v channel_id | xargs))
 
 
 	## Get New ID's from channel
@@ -36,10 +36,10 @@ if [ ${vid_left} -eq 0 ]; then
 		${code_dir}/channel_audit.sh ${c}
 	done
 
-	today_id_count=$(cat get_today_from_yt | wc -l)
+	today_id_count=$(cat /tmp/get_today_from_yt | wc -l)
 
-	vids=($(cat get_today_from_yt | awk '{print $1}' | xargs))
-	chans=($(cat get_today_from_yt | awk '{print $2}' | xargs))
+	vids=($(cat /tmp/get_today_from_yt | awk '{print $1}' | xargs))
+	chans=($(cat /tmp/get_today_from_yt | awk '{print $2}' | xargs))
 	count=$(echo "${#vids[@]}")
 
 	v=0
@@ -49,7 +49,7 @@ if [ ${vid_left} -eq 0 ]; then
 EOF
 		v=$((v+1))
 	done
-	rm -rf get_today_from_yt
+	rm -rf /tmp/get_today_from_yt
 	vid_left=${count}
 fi
 
@@ -62,7 +62,7 @@ while [ ${vid_left} -gt 0 ]; do
 		## Set channels checked
 		for c in ${channels[@]};
 		do
-        		mysql -u $user -p${password} youtube -e "UPDATE channel SET last_checked = '"${day}"' WHERE channel_name ='"${c}"'"
+        		mysql -u $user -p${password} youtube -e "UPDATE channel SET last_checked = '"${day}"' WHERE channel_id ='"${c}"'"
 		done
 
 		#Set Download Database
@@ -91,13 +91,13 @@ EOF
 	fi
 	vid_left=$(mysql -u ${user} -p${password} -D youtube -e "select count(video_id) from working;" | tail -n 1)
 	echo "Sleeping between 2-45 seconds"
-	sleep $[ ( $RANDOM % 45 )  + 1 ]s
+	sleep $[ ( $RANDOM % 45 )  + 1 ]
 done
 
 ## Set channels checked
 for c in ${channels[@]};
 do
-	mysql -u ${user} -p${password} youtube -e "UPDATE channel SET last_checked = '"${day}"' WHERE channel_name ='"${c}"'"
+	mysql -u ${user} -p${password} youtube -e "UPDATE channel SET last_checked = '"${day}"' WHERE channel_id ='"${c}"'"
 done
 
 #Set Download Database
