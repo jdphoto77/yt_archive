@@ -42,7 +42,7 @@ full_path="${path}/${file_name}"
 
 curl -sS "https://www.googleapis.com/youtube/v3/videos?key=${key}&part=snippet&id=${id}" -o /tmp/vid_info
 publish_date=$(cat /tmp/vid_info | grep '"publishedAt":' | cut -d':' -f 2- | cut -d'"' -f 2 | cut -d'T' -f 1)
-vid_title=$(cat /tmp/vid_info | grep '"title":' | head -1 | cut -d':' -f 2- | cut -d'"' -f 2)
+vid_title=$(cat /tmp/vid_info | grep '"title":' | head -1 | cut -d':' -f 2- | sed -e 's/^ "\(.*\)",/\1/')
 rm -rf /tmp/vid_info
 
 ## Inject Movie Info to Database
