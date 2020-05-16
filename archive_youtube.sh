@@ -71,7 +71,9 @@ while [ ${vid_left} -gt 0 ]; do
 EOF
 
 		#Message How Many Downloaded
-		curl -X POST -H 'Content-type: application/json' --data '{"text":"'$daily_count' Videos were scraped from Youtube"}' $webhook
+		if [ -n "$webhook" ]; then
+			curl -X POST -H 'Content-type: application/json' --data '{"text":"'$daily_count' Videos were scraped from Youtube"}' $webhook
+		fi
 		exit 1
 	fi
 	next=$(mysql -u ${user} -p${password} -D youtube -e "select video_id, channel_id from working limit 1;" | tail -n 1)
@@ -105,4 +107,6 @@ INSERT INTO run_stats (run_date, count_downloaded, current_run_day) VALUES ("$da
 EOF
 
 #Message How Many Downloaded
-curl -X POST -H 'Content-type: application/json' --data '{"text":"'$daily_count' Videos were scraped from Youtube"}' $webhook
+if [ -n "$webhook" ]; then
+	curl -X POST -H 'Content-type: application/json' --data '{"text":"'$daily_count' Videos were scraped from Youtube"}' $webhook
+fi
