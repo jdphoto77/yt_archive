@@ -13,6 +13,8 @@ link="https://www.youtube.com/watch?v="${id}
 
 echo Link: $link
 
+target_ext="mp4"
+
 ## Working directory
 mkdir ${scratch_dir}
 cd ${scratch_dir}
@@ -28,7 +30,7 @@ if [[ $id == -* ]]; then
 else
         grepid=$id
 fi
-file_name=$(ls | grep ${grepid})
+file_name=$(ls | grep ${grepid}.${target_ext})
 
 ## Get variables for Database Injection
 path=$(mysql -u $user -p${password} -D youtube -e "select base_dir from channel where channel_id = '"${chan_id}"';" | grep -v base_dir)
@@ -52,9 +54,9 @@ if [ $? -ne 0 ]; then
 fi
 
 ## Playlist Detection
-dl_count=$(ls | grep ".mp4" | wc -l)
+dl_count=$(ls | grep ".${target_ext}" | wc -l)
 if [ ${dl_count} -gt 1 ]; then
-	extra_ids=($(ls | grep ".mp4" | grep -v ${id} | sed 's/.\{4\}$//' | sed 's/.*\(...........\)/\1/' | xargs))
+	extra_ids=($(ls | grep ".${target_ext}" | grep -v ${id} | sed 's/.\{4\}$//' | sed 's/.*\(...........\)/\1/' | xargs))
 	for i in ${extra_ids[@]};
 	do
 		## Note: path, channel_name, and channel_id are reused from master
@@ -63,7 +65,7 @@ if [ ${dl_count} -gt 1 ]; then
         	else
                 	grepid=$i
         	fi
-		file_name=$(ls | grep ${grepid})
+		file_name=$(ls | grep ${grepid}.${target_ext})
 		resolution=$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "${file_name}")
 		duration=$(ffprobe -i "${file_name}" -show_entries format=duration -v quiet -of csv="p=0")
 		full_path="${path}/${file_name}"
@@ -82,7 +84,7 @@ EOF
 	done
 fi
 
-## Move File to Archive
-mv *.mp4 "${path}/"
+## Move all fetched files to Archive
+mv * "${path}/"
 cd /
 rm -rf ${scratch_dir}
