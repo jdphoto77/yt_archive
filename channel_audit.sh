@@ -6,41 +6,30 @@
 
 code_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source ${code_dir}/yt_config
-channel_name=$1
+channel_id=$1
 
 ## Get text file list of video id's in database
-mysql -u ${user} -p${password} -D youtube -e "select video_id from video where channel_name = '"${channel_name}"';" > tmp_list
+mysql -u ${user} -p${password} -D youtube -e "select video_id from video where channel_id = '"${channel_id}"';" > /tmp/tmp_list
 tail -n +2 /tmp/tmp_list > /tmp/working_list_in_db
 rm -rf /tmp/tmp_list
 
-channel_id=$(mysql -u ${user} -p${password} -D youtube -e "select channel_id from channel where channel_name = '"${channel_name}"';" | grep -v channel_id)
+channel_name=$(mysql -u ${user} -p${password} -D youtube -e "select channel_name from channel where channel_id = '"${channel_id}"';" | grep -v channel_id)
 
 ## Get text file list of video id's from youtube
-<<<<<<< HEAD
-wget "https://www.googleapis.com/youtube/v3/channels?key=${key}&id=${channel_id}&part=contentDetails&maxResults=50" -O upload_workfile
-upload_id=$(grep uploads upload_workfile | cut -d':' -f 2 | cut -d'"' -f 2)
-rm -rf upload_workfile
-=======
 curl -sS "https://www.googleapis.com/youtube/v3/channels?key=${key}&id=${channel_id}&part=contentDetails&maxResults=50" -o /tmp/upload_workfile
 upload_id=$(grep uploads /tmp/upload_workfile | cut -d':' -f 2 | cut -d'"' -f 2)
 rm -rf /tmp/upload_workfile
->>>>>>> e66d4ea... Create temp files in /tmp
 done=0
 
-wget "https://www.googleapis.com/youtube/v3/playlistItems?key=${key}&part=contentDetails&playlistId=${upload_id}&maxResults=50" -O playlist_output
+curl -sS "https://www.googleapis.com/youtube/v3/playlistItems?key=${key}&part=contentDetails&playlistId=${upload_id}&maxResults=50" -o /tmp/playlist_output
 while [ ${done} -lt 1 ]; do
 	next_page=$(cat /tmp/playlist_output | head -10 | grep nextPageToken | cut -d'"' -f 4)
 	if [ -z ${next_page} ]; then
 		cat /tmp/playlist_output | grep videoId | cut -d'"' -f 4 >> /tmp/working_list_from_yt
 		done=1
 	else
-<<<<<<< HEAD
-		cat playlist_output | grep videoId | cut -d'"' -f 4 >> working_list_from_yt
-		wget "https://www.googleapis.com/youtube/v3/playlistItems?key=${key}&pageToken=${next_page}&part=contentDetails&playlistId=${upload_id}&maxResults=50" -O playlist_output
-=======
 		cat /tmp/playlist_output | grep videoId | cut -d'"' -f 4 >> /tmp/working_list_from_yt
 		curl -sS "https://www.googleapis.com/youtube/v3/playlistItems?key=${key}&pageToken=${next_page}&part=contentDetails&playlistId=${upload_id}&maxResults=50" -o /tmp/playlist_output
->>>>>>> e66d4ea... Create temp files in /tmp
 		done=0
 	fi
 done

@@ -15,7 +15,7 @@ source ${code_dir}/yt_config
 
 chan_id=$(mysql -u $user -p${password} -D youtube -e "select channel_id from channel where channel_name = '"${channel_name}"';" | grep -v channel_id)
 
-wget "https://www.googleapis.com/youtube/v3/videos?key=${key}&part=snippet&id=${id}" -O /tmp/vid_info
+curl -sS "https://www.googleapis.com/youtube/v3/videos?key=${key}&part=snippet&id=${id}" -o /tmp/vid_info
 return_c=$?
 if [ ${return_c} -ne 0 ]; then
 	mysql --user=$user --password=$password --default-character-set=utf8mb4 youtube << EOF

@@ -27,7 +27,7 @@ if [ ${vid_left} -eq 0 ]; then
 	fi
 
 	## Get Today's Channel IDs
-	channels=($(mysql -u ${user} -p${password} -D youtube -e "select channel_name from channel where rotation_day = '"${today_run_number}"' AND active = '1';" | grep -v channel_name | xargs))
+	channels=($(mysql -u ${user} -p${password} -D youtube -e "select channel_id from channel where rotation_day = '"${today_run_number}"' AND active = '1';" | grep -v channel_id | xargs))
 
 
 	## Get New ID's from channel
@@ -62,7 +62,7 @@ while [ ${vid_left} -gt 0 ]; do
 		## Set channels checked
 		for c in ${channels[@]};
 		do
-        		mysql -u $user -p${password} youtube -e "UPDATE channel SET last_checked = '"${day}"' WHERE channel_name ='"${c}"'"
+        		mysql -u $user -p${password} youtube -e "UPDATE channel SET last_checked = '"${day}"' WHERE channel_id ='"${c}"'"
 		done
 
 		#Set Download Database
@@ -97,7 +97,7 @@ done
 ## Set channels checked
 for c in ${channels[@]};
 do
-	mysql -u ${user} -p${password} youtube -e "UPDATE channel SET last_checked = '"${day}"' WHERE channel_name ='"${c}"'"
+	mysql -u ${user} -p${password} youtube -e "UPDATE channel SET last_checked = '"${day}"' WHERE channel_id ='"${c}"'"
 done
 
 #Set Download Database
