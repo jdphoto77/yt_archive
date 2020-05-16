@@ -13,15 +13,13 @@ link="https://www.youtube.com/watch?v="${id}
 
 echo Link: $link
 
-target_ext="mp4"
-
 ## Working directory
 mkdir ${scratch_dir}
 cd ${scratch_dir}
 rm -rf *
 
 ## Download the Video
-/usr/local/bin/youtube-dl --force-ipv4 --limit-rate 2M -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best' $link
+/usr/local/bin/youtube-dl ${youtubedl_params} $link
 if [ $? -ne 0 ]; then
 	exit 1
 fi

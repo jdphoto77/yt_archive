@@ -6,11 +6,15 @@
 # rotation_days --> Number of days channel checks are spread across
 # webhook --> Webhook for Slack Integration
 # scrach_dir --> path to where youtube-dl does intermediate work
+# target_ext --> video format produced by youtube-dl
+# youtubedl_params --> exact parameters for youtube-dl
 ####################
 
-readonly key=""
-readonly user=""
-readonly password=""
-readonly rotation_days=""
-readonly webhook=""
-readonly scratch_dir=""
+readonly key=''
+readonly user=''
+readonly password=''
+readonly rotation_days=''
+readonly webhook=''
+readonly scratch_dir=''
+readonly target_ext='mp4'
+readonly youtubedl_params='--force-ipv4 --limit-rate 2M -f bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best'
